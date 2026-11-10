@@ -1,0 +1,9 @@
+name: themed-buildings
+display-name: Themed Buildings
+type: module
+version: 1.0.0
+author: Monsterfish
+dependencies:
+  gmResourceModifier: ^0.3.0
+meta:
+  version: 1.0.0

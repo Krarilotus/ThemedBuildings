@@ -1,0 +1,316 @@
+--[[
+Themed Buildings: chapel, church and cathedral look European or Arabian depending on the lord
+of the player who owns them.
+
+How:
+* At game start the game loads every .gm1 sheet. Right after that, the church sheet
+  (tile_churches, gm 49) is copied into a free gm slot and gmResourceModifier swaps in
+  resources/tile_churches_themed.gm1, the same sheet with the three buildings redrawn.
+* renderMap reads a building tile's picture number in two places (ground diamonds, then the
+  building strips). Both reads are hooked: when the picture belongs to a chapel, church or
+  cathedral and the owner's lord culture differs from the one the game files show, the same
+  picture of the themed sheet is drawn instead. Nothing is written into the map or the save.
+* The owner's culture comes from the game's own lord type function (0 European, 1 Arabian),
+  which aiSwapper also answers for custom AI lords. It is asked once per player per game tick.
+]]
+
+local NAME = "themed-buildings"
+local GM_CHURCHES = 49
+local GM_SLOTS = 240
+local GM_HEADER = 5208
+local SHEET_IMAGES = 286           -- cathedral 169 + church 81 + chapel 36
+local GROUP_CHURCH = 169
+local GROUP_CHAPEL = 250
+local RESOURCE = "ucp/modules/" .. NAME .. "/resources/tile_churches_themed.gm1"
+local CACHE = "ucp/" .. NAME .. "-tile_churches.gm1"
+local CULTURE = { european = 0, arabian = 1 }
+
+local themed = {}
+
+local function log_(level, text)
+  log(level, NAME .. ": " .. text)
+end
+
+local function scan(name, pattern)
+  local address = core.scanForAOB(pattern)
+  if address == nil then
+    error(NAME .. ": could not find " .. name .. " (" .. pattern .. ")")
+  end
+  return address
+end
+
+local function u8(address)
+  return core.readByte(address) & 0xFF
+end
+
+local function readAll(path)
+  local file = io.open(path, "rb")
+  if file == nil then
+    return nil
+  end
+  local data = file:read("a")
+  file:close()
+  return data
+end
+
+---gmResourceModifier reads the file itself (not through UCP), so a module installed as a zip
+---needs the sheet on disk: keep a copy in ucp/.
+local function sheetPath()
+  local data = readAll(RESOURCE)
+  if data == nil then
+    error(NAME .. ": missing " .. RESOURCE)
+  end
+  if readAll(CACHE) ~= data then
+    local file = io.open(CACHE, "wb")
+    if file == nil then
+      error(NAME .. ": could not write " .. CACHE)
+    end
+    file:write(data)
+    file:close()
+  end
+  return CACHE, string.unpack("<I4", data, 13), string.unpack("<I4", data, 21)
+end
+
+local function culture(value, default)
+  return CULTURE[value] or default
+end
+
+-- Render hooks ------------------------------------------------------------------------------
+
+local REMAP = [[
+; ecx = picture number, eax = map tile. Returns ecx, keeps every other register and the flags.
+remap:
+  pushfd
+  push eax
+  push edx
+  mov edx, ecx
+  sub edx, dword [VARS + 4]          ; picture - first picture of the church sheet
+  cmp edx, SHEET
+  jae .done
+  cmp dword [VARS], 0                ; themed sheet not loaded
+  je .done
+  movsx eax, word [eax*2 + BMAP]     ; building on the tile
+  test eax, eax
+  jle .done
+  imul eax, eax, 0x32C
+  movzx eax, word [eax + OWNER]
+  test eax, eax
+  jz .done
+  cmp eax, 15
+  ja .done
+  push edx
+  call lordOf                        ; al = 0 European, 1 Arabian
+  pop edx
+  cmp edx, CHURCH
+  jb .cathedral
+  cmp edx, CHAPEL
+  jb .church
+  cmp al, byte [VARS + 0x12]
+  je .done
+  jmp .swap
+.church:
+  cmp al, byte [VARS + 0x11]
+  je .done
+  jmp .swap
+.cathedral:
+  cmp al, byte [VARS + 0x10]
+  je .done
+.swap:
+  add ecx, dword [VARS]
+.done:
+  pop edx
+  pop eax
+  popfd
+  ret
+
+; eax = player 1..15 -> eax = lord type, asked from the game once per player and tick.
+lordOf:
+  mov edx, dword [TICK]
+  cmp edx, dword [VARS + 8]
+  je .cached
+  mov dword [VARS + 8], edx
+  mov dword [VARS + 0x20], 0xFFFFFFFF
+  mov dword [VARS + 0x24], 0xFFFFFFFF
+  mov dword [VARS + 0x28], 0xFFFFFFFF
+  mov dword [VARS + 0x2C], 0xFFFFFFFF
+.cached:
+  movzx edx, byte [VARS + 0x20 + eax]
+  cmp edx, 0xFF
+  jne .known
+  push ecx
+  push eax
+  push eax
+  mov edx, LORDTYPE
+  call edx                           ; stdcall, ret 4
+  and eax, 1
+  mov edx, eax
+  pop eax
+  mov byte [VARS + 0x20 + eax], dl
+  pop ecx
+.known:
+  mov eax, edx
+  ret
+]]
+
+local HOOK_GROUND = [[
+  movzx ecx, word [ebp*2 + GFX]
+  push eax
+  mov eax, ebp
+  call REMAP
+  pop eax
+  jmp RESUME
+]]
+
+local HOOK_BUILDING = [[
+  movzx ebp, word [eax*2 + GFX]
+  push ecx
+  mov ecx, ebp
+  call REMAP
+  mov ebp, ecx
+  pop ecx
+  jmp RESUME
+]]
+
+local function jump(from, to, size)
+  local bytes = { 0xE9, core.itob(to - from - 5) }
+  for _ = 6, size do
+    bytes[#bytes + 1] = 0x90
+  end
+  core.writeCode(from, bytes)
+end
+
+local function installRender(data, config)
+  local ground = scan("ground tile read", "0F B7 0C 6D ? ? ? ? 89 0D ? ? ? ? 7C 13 8B 54 24 28")
+  local building = scan("building tile read", "0F B7 2C 45 ? ? ? ? 0F B7 3C 45 ? ? ? ? 8D 04 45")
+  local bmap = scan("building map", "0F BF 34 75 ? ? ? ? 89 0D ? ? ? ? 89 44 24 48")
+  local owner = scan("building type", "0F B7 A9 ? ? ? ? 0F BF CD 8B 0C 8D")
+  local lord = scan("lord type", "8B 44 24 04 83 3C 85 ? ? ? ? FF 75 ? 69 C0")
+  local tick = scan("tick counter", "8B 87 50 0A 00 00 8B 8F 98 09 00 00")
+
+  local gfx = core.readInteger(ground + 4)
+  if core.readInteger(building + 4) ~= gfx then
+    error(NAME .. ": the two tile picture reads use different maps")
+  end
+  if core.readInteger(owner - 4) ~= 0x32C or u8(owner - 6) ~= 0x69 then
+    error(NAME .. ": unexpected building size")
+  end
+
+  core.writeByte(data + 0x10, culture(config.cathedral, 0))
+  core.writeByte(data + 0x11, culture(config.church, 1))
+  core.writeByte(data + 0x12, culture(config.chapel, 0))
+
+  local values = {
+    VARS = data,
+    SHEET = SHEET_IMAGES,
+    CHURCH = GROUP_CHURCH,
+    CHAPEL = GROUP_CHAPEL,
+    BMAP = core.readInteger(bmap + 4),
+    OWNER = core.readInteger(owner + 3) + 4,   -- +0xD2 building type, +0xD6 owner
+    LORDTYPE = lord,
+    TICK = core.readInteger(tick + 14),
+  }
+  local remap = core.allocateAssembly(REMAP, values)
+
+  local blob = core.allocateAssembly(HOOK_GROUND, { GFX = gfx, REMAP = remap, RESUME = ground + 8 })
+  jump(ground, blob, 8)
+  blob = core.allocateAssembly(HOOK_BUILDING, { GFX = gfx, REMAP = remap, RESUME = building + 8 })
+  jump(building, blob, 8)
+end
+
+-- The themed sheet --------------------------------------------------------------------------
+
+local function installSheet(data, modifier)
+  local loader = scan("gm loader", "53 55 8B 6C 24 0C 56 57 8B D9 33 C0")
+  if u8(loader + 0x35) ~= 0xA3 or u8(loader + 0x6F) ~= 0x89 then
+    error(NAME .. ": unsupported gm loader")
+  end
+  local addresses = {
+    first = core.readInteger(loader + 0x72),
+    count = core.readInteger(loader + 0x36),
+    headers = core.readInteger(scan("image headers", "C1 E0 04 81 C1 ? ? ? 00 50 51") + 5),
+    sizes = core.readInteger(scan("image sizes", "89 14 BD ? ? ? 00 EB 53") + 3),
+    offsets = core.readInteger(scan("image offsets", "8B 2C BD ? ? ? 00 03 D7 3B FA") + 3),
+  }
+
+  local path, count, kind = sheetPath()
+  if kind ~= 3 or count < SHEET_IMAGES then
+    error(NAME .. ": " .. RESOURCE .. " is not a building sheet")
+  end
+  local resource = modifier:LoadGm1Resource(path)
+  if type(resource) ~= "number" or resource < 0 then
+    error(NAME .. ": gmResourceModifier could not load " .. path)
+  end
+
+  local original
+  original = core.hookCode(function(renderer, names)
+    original(renderer, names)
+    local ok, message = pcall(function()
+      local slot = core.readInteger(renderer + 0x4C)
+      local nextImage = core.readInteger(renderer + 0x48)
+      local base = renderer + 0x51C + GM_CHURCHES * GM_HEADER
+      local baseCount = core.readInteger(base + 12)
+      local source = core.readInteger(addresses.first + GM_CHURCHES * 4)
+      if slot < 1 or slot >= GM_SLOTS then
+        error("no free gm slot")
+      end
+      if core.readInteger(renderer + 0x51C + slot * GM_HEADER + 12) ~= 0 then
+        error("gm slot " .. slot .. " is already used")
+      end
+      if core.readInteger(base + 20) ~= 3 or baseCount < SHEET_IMAGES then
+        error("tile_churches.gm1 has " .. baseCount .. " pictures, needs at least " .. SHEET_IMAGES)
+      end
+      if nextImage + count > 66000 then
+        error("no room for " .. count .. " more pictures")
+      end
+      -- an empty copy of the church sheet's slot, sized for the themed file
+      local header = renderer + 0x51C + slot * GM_HEADER
+      core.writeBytes(header, core.readBytes(base, GM_HEADER))
+      core.writeInteger(header + 12, count)
+      local copied = math.min(count, baseCount)
+      for _, item in ipairs({ { addresses.headers, 16 }, { addresses.offsets, 4 }, { addresses.sizes, 4 } }) do
+        core.writeBytes(item[1] + nextImage * item[2], core.readBytes(item[1] + source * item[2], copied * item[2]))
+      end
+      core.writeInteger(addresses.first + slot * 4, nextImage)
+      core.writeInteger(renderer + 0x48, nextImage + count)
+      core.writeInteger(renderer + 0x4C, slot + 1)
+      core.writeInteger(addresses.count, slot + 1)
+      modifier:SetGm(slot, -1, resource, -1)      -- queued, applied once the loader is done
+      core.writeInteger(data + 4, source)
+      core.writeInteger(data, nextImage - source)
+      log_(INFO, string.format("themed churches in gm slot %d (pictures %d..%d)", slot, nextImage,
+        nextImage + count - 1))
+    end)
+    if not ok then
+      core.writeInteger(data, 0)
+      log_(WARNING, "themed churches are off: " .. tostring(message))
+    end
+  end, loader, 2, 1, 6)
+end
+
+-- Module ------------------------------------------------------------------------------------
+
+function themed.enable(self, config)
+  config = config or {}
+  if config.enabled == false then
+    log_(INFO, "off")
+    return
+  end
+  local modifier = modules.gmResourceModifier
+  if modifier == nil then
+    error(NAME .. ": needs gmResourceModifier")
+  end
+  -- VARS: +0 picture shift (0 = off), +4 first church picture, +8 tick of the lord cache,
+  -- +0x10..0x12 culture the game files show (cathedral, church, chapel), +0x20 lord per player
+  local data = core.allocate(0x40, true)
+  core.writeInteger(data + 8, 0x7FFFFFFF)            -- no tick yet: ask the game on first use
+  for offset = 0x20, 0x2C, 4 do
+    core.writeInteger(data + offset, 0xFFFFFFFF)
+  end
+  installSheet(data, modifier)
+  installRender(data, config)
+end
+
+function themed.disable(self, config)
+end
+
+return themed
