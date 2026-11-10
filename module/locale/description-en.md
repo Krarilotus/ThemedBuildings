@@ -1,11 +1,12 @@
 # Themed Buildings
 
 **Author**: Monsterfish
-**Version**: 1.0.0
+**Version**: 1.0.1
 
 Chapels, churches and cathedrals take the look of their owner's lord. European lords build a
 chapel, a church and a cathedral; Arabian lords build a small mosque, a mosque and a grand
-mosque.
+mosque. A ruined cathedral becomes a ruined grand mosque, if the game's
+tile_churches.gm1 has the ruin (vanilla does, Reconquista's does not).
 
 Each building has two pictures: the one in the game files and a themed one this module brings.
 In the settings you say which side the game files' picture belongs to (by default the chapel

@@ -19,6 +19,7 @@ local GM_CHURCHES = 49
 local GM_SLOTS = 240
 local GM_HEADER = 5208
 local SHEET_IMAGES = 286           -- cathedral 169 + church 81 + chapel 36
+local GROUP_RUIN = 286             -- vanilla only: the ruined cathedral, 169 more
 local GROUP_CHURCH = 169
 local GROUP_CHAPEL = 250
 local RESOURCE = "ucp/modules/" .. NAME .. "/resources/tile_churches_themed.gm1"
@@ -85,7 +86,7 @@ remap:
   push edx
   mov edx, ecx
   sub edx, dword [VARS + 4]          ; picture - first picture of the church sheet
-  cmp edx, SHEET
+  cmp edx, dword [VARS + 0xC]        ; pictures both sheets have
   jae .done
   cmp dword [VARS], 0                ; themed sheet not loaded
   je .done
@@ -105,6 +106,8 @@ remap:
   jb .cathedral
   cmp edx, CHAPEL
   jb .church
+  cmp edx, RUIN
+  jae .cathedral
   cmp al, byte [VARS + 0x12]
   je .done
   jmp .swap
@@ -201,8 +204,8 @@ local function installRender(data, config)
 
   local values = {
     VARS = data,
-    SHEET = SHEET_IMAGES,
     CHURCH = GROUP_CHURCH,
+    RUIN = GROUP_RUIN,
     CHAPEL = GROUP_CHAPEL,
     BMAP = core.readInteger(bmap + 4),
     OWNER = core.readInteger(owner + 3) + 4,   -- +0xD2 building type, +0xD6 owner
@@ -276,9 +279,10 @@ local function installSheet(data, modifier)
       core.writeInteger(addresses.count, slot + 1)
       modifier:SetGm(slot, -1, resource, -1)      -- queued, applied once the loader is done
       core.writeInteger(data + 4, source)
+      core.writeInteger(data + 0xC, math.min(count, baseCount))
       core.writeInteger(data, nextImage - source)
-      log_(INFO, string.format("themed churches in gm slot %d (pictures %d..%d)", slot, nextImage,
-        nextImage + count - 1))
+      log_(INFO, string.format("themed churches in gm slot %d (pictures %d..%d)%s", slot, nextImage,
+        nextImage + count - 1, baseCount > GROUP_RUIN and "" or ", tile_churches.gm1 has no ruined cathedral"))
     end)
     if not ok then
       core.writeInteger(data, 0)
@@ -300,7 +304,7 @@ function themed.enable(self, config)
     error(NAME .. ": needs gmResourceModifier")
   end
   -- VARS: +0 picture shift (0 = off), +4 first church picture, +8 tick of the lord cache,
-  -- +0x10..0x12 culture the game files show (cathedral, church, chapel), +0x20 lord per player
+  -- +0xC pictures to swap, +0x10..0x12 culture the game files show (cathedral, church, chapel), +0x20 lord per player
   local data = core.allocate(0x40, true)
   core.writeInteger(data + 8, 0x7FFFFFFF)            -- no tick yet: ask the game on first use
   for offset = 0x20, 0x2C, 4 do

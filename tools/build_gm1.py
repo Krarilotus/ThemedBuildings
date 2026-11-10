@@ -8,6 +8,8 @@ base tile_churches.gm1 whose three buildings are replaced:
     group 0  cathedral (13x13)  <- grand_mosque.png   (414 px wide)
     group 1  church    (9x9)    <- church.png         (286 px wide)
     group 2  chapel    (6x6)    <- small_mosque.png   (190 px wide)
+    group 3  ruined cathedral (13x13) <- ruine_grand_mosque.png (414 px wide); taken from the
+             vanilla sheet when the base (Reconquista's) has no ruin
 
 A PNG is 32*N-2 wide with the footprint's front corner on its bottom row.
 
@@ -26,7 +28,9 @@ PNG_DIR = os.path.join(PLUGIN, 'themed buildings')
 BASES = [os.path.join(PLUGIN, 'gmx', 'tile_churches.gm1'), os.path.join(GAME, 'gm', 'tile_churches.gm1')]
 OUT = os.path.join(HERE, 'module', 'resources', 'tile_churches_themed.gm1')
 CHECK = os.path.join(HERE, 'check')
-GROUPS = [(0, 13, 'grand_mosque.png'), (1, 9, 'church.png'), (2, 6, 'small_mosque.png')]
+GROUPS = [(0, 13, 'grand_mosque.png'), (1, 9, 'church.png'), (2, 6, 'small_mosque.png'),
+          (3, 13, 'ruine_grand_mosque.png')]
+VANILLA = BASES[1]                 # supplies the ruined cathedral slot when the base lacks it
 HEAD = '<4H2Bh4B'   # w, h, x, y, part, parts, tilePosY, direction, hoff, strip width, colour
 
 
@@ -55,12 +59,14 @@ def diamond_rows():
 
 
 def tiles(n):
-    """Footprint tiles in part order: top-left of each tile's 30x16 box, footprint top-left 0,0."""
+    """Footprint tiles in part order: top-left of each tile's 30x16 box, footprint top-left 0,0.
+    Parts run from the front corner (bottom) to the back corner (top); the strips belong to the
+    tiles along the two back edges and stand above them."""
     out = []
     for r in range(2 * n - 1):
         k = r + 1 if r < n else 2 * n - 1 - r
         for j in range(k):
-            out.append((16 * (n - k) + 32 * j, 8 * r))
+            out.append((16 * (n - k) + 32 * j, 8 * (2 * n - 2 - r)))
     return out
 
 
@@ -169,7 +175,7 @@ def slice_group(img, n, heads, blobs, first):
 
 def render(n, heads, blobs, first):
     """Draw a group the way renderMap does: every ground diamond, then the strips, back to front."""
-    tall = max(h[6] for h in heads[first:first + n * n])
+    tall = max([heads[first + p][6] - ty for p, (tx, ty) in enumerate(tiles(n))] + [0])
     W, H = 32 * n - 2, 16 * n + tall
     img = Image.new('RGBA', (W, H), (0, 0, 0, 0)); px = img.load()
     y0 = H - 16 * n
@@ -195,6 +201,13 @@ def main():
     base = arg('--base', next(p for p in BASES if os.path.isfile(p)))
     f, n, heads, blobs = load(base)
     starts = [i for i, h in enumerate(heads) if h[4] == 0]
+    if len(starts) < 4:                # Reconquista's sheet stops after the chapel
+        vf, vn, vheads, vblobs = load(VANILLA)
+        vstarts = [i for i, h in enumerate(vheads) if h[4] == 0]
+        heads += vheads[vstarts[3]:vstarts[3] + 169]
+        blobs += vblobs[vstarts[3]:vstarts[3] + 169]
+        n = len(heads)
+        starts = [i for i, h in enumerate(heads) if h[4] == 0]
     print('base', base, n, 'images, buildings start at', starts)
     if '--check' in sys.argv:
         os.makedirs(CHECK, exist_ok=True)
@@ -203,6 +216,9 @@ def main():
     for g, size, name in GROUPS:
         first = starts[g]
         assert heads[first][5] == size * size, 'building %d is not %dx%d' % (g, size, size)
+        if not os.path.isfile(os.path.join(png_dir, name)):
+            print(name, 'missing, keeping the original pictures')
+            continue
         img = Image.open(os.path.join(png_dir, name)).convert('RGBA')
         nh, nb = slice_group(img, size, heads, blobs, first)
         heads[first:first + size * size] = nh
