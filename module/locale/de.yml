@@ -1,0 +1,27 @@
+arabian: Arabian
+cathedral: The cathedral in the game files is
+chapel: The chapel in the game files is
+church: The church in the game files is
+churches_group: Chapel, church and cathedral
+churches_group_descr: 'Each player''s chapel, church and cathedral match their lord: European lords get Christian
+
+  buildings, Arabian lords get mosques. The AI lords'' side comes from the game (and from
+
+  aiSwapper for custom AIs); yours from the lord you play.
+
+  '
+enabled: Match religious buildings to the owner's lord
+enabled_tooltip: 'Off shows every chapel, church and cathedral the way the game files draw them.
+
+  '
+european: European
+files_tooltip: 'Which side the game''s own picture of this building belongs to. Players of the other side
+
+  get the themed picture this module brings.
+
+  '
+preview: Themed placement preview
+preview_tooltip: 'The building you are about to place already shows the look your lord gets.
+
+  '
+misc: Miscellaneous

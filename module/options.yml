@@ -1,62 +1,77 @@
 options:
 - display: GroupBox
-  category: [Themed Buildings]
+  category:
+  - '{{misc}}'
   header: '{{churches_group}}'
   text: '{{churches_group_descr}}'
   hasHeader: true
   children:
   - url: themed-buildings.enabled
     name: themed-buildings-enabled
-    text: '{{enabled}}'
-    tooltip: '{{enabled_tooltip}}'
-    display: Switch
+    text: '{{enabled_tooltip}}'
+    display: UCP2Switch
     contents:
       type: boolean
       value: true
+    header: '{{enabled}}'
   - url: themed-buildings.preview
     name: themed-buildings-preview
-    text: '{{preview}}'
-    tooltip: '{{preview_tooltip}}'
-    display: Switch
+    text: '{{preview_tooltip}}'
+    display: UCP2Switch
     contents:
       type: boolean
       value: true
-  - url: themed-buildings.chapel
-    name: themed-buildings-chapel
-    text: '{{chapel}}'
-    tooltip: '{{files_tooltip}}'
-    display: Choice
-    contents:
-      type: string
-      value: european
-      choices:
-      - name: european
-        text: '{{european}}'
-      - name: arabian
-        text: '{{arabian}}'
-  - url: themed-buildings.church
-    name: themed-buildings-church
-    text: '{{church}}'
-    tooltip: '{{files_tooltip}}'
-    display: Choice
-    contents:
-      type: string
-      value: arabian
-      choices:
-      - name: european
-        text: '{{european}}'
-      - name: arabian
-        text: '{{arabian}}'
-  - url: themed-buildings.cathedral
-    name: themed-buildings-cathedral
-    text: '{{cathedral}}'
-    tooltip: '{{files_tooltip}}'
-    display: Choice
-    contents:
-      type: string
-      value: european
-      choices:
-      - name: european
-        text: '{{european}}'
-      - name: arabian
-        text: '{{arabian}}'
+    header: '{{preview}}'
+  - name: themed-buildings-chapel_details
+    display: GroupBox
+    hasHeader: true
+    header: '{{chapel}}'
+    text: '{{files_tooltip}}'
+    children:
+    - url: themed-buildings.chapel
+      name: themed-buildings-chapel
+      display: Choice
+      contents:
+        type: string
+        value: european
+        choices:
+        - name: european
+          text: '{{european}}'
+        - name: arabian
+          text: '{{arabian}}'
+  - name: themed-buildings-church_details
+    display: GroupBox
+    hasHeader: true
+    header: '{{church}}'
+    text: '{{files_tooltip}}'
+    children:
+    - url: themed-buildings.church
+      name: themed-buildings-church
+      display: Choice
+      contents:
+        type: string
+        value: arabian
+        choices:
+        - name: european
+          text: '{{european}}'
+        - name: arabian
+          text: '{{arabian}}'
+  - name: themed-buildings-cathedral_details
+    display: GroupBox
+    hasHeader: true
+    header: '{{cathedral}}'
+    text: '{{files_tooltip}}'
+    children:
+    - url: themed-buildings.cathedral
+      name: themed-buildings-cathedral
+      display: Choice
+      contents:
+        type: string
+        value: european
+        choices:
+        - name: european
+          text: '{{european}}'
+        - name: arabian
+          text: '{{arabian}}'
+meta:
+  version: 1.0.0
