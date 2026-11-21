@@ -1,27 +1,14 @@
-arabian: Arabian
-cathedral: The cathedral in the game files is
-chapel: The chapel in the game files is
-church: The church in the game files is
-churches_group: Chapel, church and cathedral
-churches_group_descr: 'Each player''s chapel, church and cathedral match their lord: European lords get Christian
-
-  buildings, Arabian lords get mosques. The AI lords'' side comes from the game (and from
-
-  aiSwapper for custom AIs); yours from the lord you play.
-
-  '
-enabled: Match religious buildings to the owner's lord
-enabled_tooltip: 'Off shows every chapel, church and cathedral the way the game files draw them.
-
-  '
-european: European
-files_tooltip: 'Which side the game''s own picture of this building belongs to. Players of the other side
-
-  get the themed picture this module brings.
-
-  '
-preview: Themed placement preview
-preview_tooltip: 'The building you are about to place already shows the look your lord gets.
-
-  '
+arabian: Arab
+cathedral: Az eredeti székesegyház kultúrája
+chapel: Az eredeti kápolna kultúrája
+church: Az eredeti templom kultúrája
+churches_group: Kápolna, templom és székesegyház
+churches_group_descr: Az európai urak keresztény épületeket, az arab urak mecseteket kapnak. Egyéni MI esetén a
+  kultúrát az aiSwapper adja meg.
+enabled: Vallási épületek az úr kultúrája szerint
+enabled_tooltip: Kikapcsolva az eredeti képek jelennek meg.
+european: Európai
+files_tooltip: Válassza ki a játék képének kultúráját. A másik kultúra az alternatív képet kapja.
+preview: Kultúrához igazított előnézet
+preview_tooltip: Az előnézet az úr kultúrájának megfelelő épületet mutatja.
 misc: Miscellaneous

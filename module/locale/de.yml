@@ -1,27 +1,14 @@
-arabian: Arabian
-cathedral: The cathedral in the game files is
-chapel: The chapel in the game files is
-church: The church in the game files is
-churches_group: Chapel, church and cathedral
-churches_group_descr: 'Each player''s chapel, church and cathedral match their lord: European lords get Christian
-
-  buildings, Arabian lords get mosques. The AI lords'' side comes from the game (and from
-
-  aiSwapper for custom AIs); yours from the lord you play.
-
-  '
-enabled: Match religious buildings to the owner's lord
-enabled_tooltip: 'Off shows every chapel, church and cathedral the way the game files draw them.
-
-  '
-european: European
-files_tooltip: 'Which side the game''s own picture of this building belongs to. Players of the other side
-
-  get the themed picture this module brings.
-
-  '
-preview: Themed placement preview
-preview_tooltip: 'The building you are about to place already shows the look your lord gets.
-
-  '
+arabian: Arabisch
+cathedral: Kultur der Originalkathedrale
+chapel: Kultur der Originalkapelle
+church: Kultur der Originalkirche
+churches_group: Kapelle, Kirche und Kathedrale
+churches_group_descr: Europäische Burgherren erhalten christliche Bauten, arabische Burgherren Moscheen. Bei benutzerdefinierten
+  KI-Gegnern liefert aiSwapper die Kultur.
+enabled: Sakralbauten an den Burgherrn anpassen
+enabled_tooltip: Aus zeigt die Originalgrafiken.
+european: Europäisch
+files_tooltip: Wähle die Kultur der Spielgrafik. Die andere Kultur verwendet die alternative Grafik.
+preview: Angepasste Bauvorschau
+preview_tooltip: Die Vorschau zeigt den Stil deines Burgherrn.
 misc: Miscellaneous
