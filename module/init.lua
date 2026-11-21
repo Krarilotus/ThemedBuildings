@@ -79,7 +79,11 @@ end
 -- Render hooks ------------------------------------------------------------------------------
 
 local REMAP = [[
-; ecx = picture number, eax = map tile. Returns ecx, keeps every other register and the flags.
+; Two entry points: +0 remap (ecx = picture, eax = map tile: the owner is the building on the
+; tile) and +5 remapPlayer (ecx = picture, eax = player: the building preview, which has no
+; building yet). Both return ecx and keep every other register and the flags.
+  jmp near remap
+  jmp near remapPlayer
 remap:
   pushfd
   push eax
@@ -87,40 +91,52 @@ remap:
   mov edx, ecx
   sub edx, dword [VARS + 4]          ; picture - first picture of the church sheet
   cmp edx, dword [VARS + 0xC]        ; pictures both sheets have
-  jae .done
+  jae r_done
   cmp dword [VARS], 0                ; themed sheet not loaded
-  je .done
+  je r_done
   movsx eax, word [eax*2 + BMAP]     ; building on the tile
   test eax, eax
-  jle .done
+  jle r_done
   imul eax, eax, 0x32C
   movzx eax, word [eax + OWNER]
+  jmp r_owner
+remapPlayer:
+  pushfd
+  push eax
+  push edx
+  mov edx, ecx
+  sub edx, dword [VARS + 4]
+  cmp edx, dword [VARS + 0xC]
+  jae r_done
+  cmp dword [VARS], 0
+  je r_done
+r_owner:
   test eax, eax
-  jz .done
+  jz r_done
   cmp eax, 15
-  ja .done
+  ja r_done
   push edx
   call lordOf                        ; al = 0 European, 1 Arabian
   pop edx
   cmp edx, CHURCH
-  jb .cathedral
+  jb r_cathedral
   cmp edx, CHAPEL
-  jb .church
+  jb r_church
   cmp edx, RUIN
-  jae .cathedral
+  jae r_cathedral
   cmp al, byte [VARS + 0x12]
-  je .done
-  jmp .swap
-.church:
+  je r_done
+  jmp r_swap
+r_church:
   cmp al, byte [VARS + 0x11]
-  je .done
-  jmp .swap
-.cathedral:
+  je r_done
+  jmp r_swap
+r_cathedral:
   cmp al, byte [VARS + 0x10]
-  je .done
-.swap:
+  je r_done
+r_swap:
   add ecx, dword [VARS]
-.done:
+r_done:
   pop edx
   pop eax
   popfd
@@ -130,16 +146,16 @@ remap:
 lordOf:
   mov edx, dword [TICK]
   cmp edx, dword [VARS + 8]
-  je .cached
+  je l_cached
   mov dword [VARS + 8], edx
   mov dword [VARS + 0x20], 0xFFFFFFFF
   mov dword [VARS + 0x24], 0xFFFFFFFF
   mov dword [VARS + 0x28], 0xFFFFFFFF
   mov dword [VARS + 0x2C], 0xFFFFFFFF
-.cached:
+l_cached:
   movzx edx, byte [VARS + 0x20 + eax]
   cmp edx, 0xFF
-  jne .known
+  jne l_known
   push ecx
   push eax
   push eax
@@ -150,7 +166,7 @@ lordOf:
   pop eax
   mov byte [VARS + 0x20 + eax], dl
   pop ecx
-.known:
+l_known:
   mov eax, edx
   ret
 ]]
@@ -171,6 +187,32 @@ local HOOK_BUILDING = [[
   call REMAP
   mov ebp, ecx
   pop ecx
+  jmp RESUME
+]]
+
+-- The building preview: the construction layer holds the pictures of the building being
+-- placed, tile by tile, and renderMap reads it twice (ground diamonds, then the building
+-- strips). It belongs to the local player, so their lord decides the look.
+local HOOK_PREVIEW_GROUND = [[
+  movzx eax, word [ebp*2 + LAYER]
+  push ecx
+  mov ecx, eax
+  mov eax, dword [PLAYER]
+  call REMAP_PLAYER
+  mov eax, ecx
+  pop ecx
+  jmp RESUME
+]]
+
+local HOOK_PREVIEW_BUILDING = [[
+  movzx eax, word [eax]
+  push ecx
+  mov ecx, eax
+  mov eax, dword [PLAYER]
+  call REMAP_PLAYER
+  mov eax, ecx
+  pop ecx
+  test eax, eax
   jmp RESUME
 ]]
 
@@ -218,6 +260,25 @@ local function installRender(data, config)
   jump(ground, blob, 8)
   blob = core.allocateAssembly(HOOK_BUILDING, { GFX = gfx, REMAP = remap, RESUME = building + 8 })
   jump(building, blob, 8)
+
+  if config.preview == false then
+    return
+  end
+  local previewGround = scan("preview ground read", "0F B7 04 6D ? ? ? ? 33 F6 85 C0 89 74 24 54 A3")
+  local previewBuilding = scan("preview building read", "8D 04 45 ? ? ? ? 89 44 24 68 0F B7 00 85 C0")
+  local layer = core.readInteger(previewGround + 4)
+  if core.readInteger(previewBuilding + 3) ~= layer or u8(previewGround + 0x99) ~= 0xA1 then
+    error(NAME .. ": the building preview reads do not look the way they should")
+  end
+  local player = core.readInteger(previewGround + 0x9A)
+  blob = core.allocateAssembly(HOOK_PREVIEW_GROUND, {
+    LAYER = layer, PLAYER = player, REMAP_PLAYER = remap + 5, RESUME = previewGround + 8,
+  })
+  jump(previewGround, blob, 8)
+  blob = core.allocateAssembly(HOOK_PREVIEW_BUILDING, {
+    PLAYER = player, REMAP_PLAYER = remap + 5, RESUME = previewBuilding + 0xB + 5,
+  })
+  jump(previewBuilding + 0xB, blob, 5)
 end
 
 -- The themed sheet --------------------------------------------------------------------------

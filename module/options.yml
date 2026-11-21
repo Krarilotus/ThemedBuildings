@@ -13,6 +13,14 @@ options:
     contents:
       type: boolean
       value: true
+  - url: themed-buildings.preview
+    name: themed-buildings-preview
+    text: '{{preview}}'
+    tooltip: '{{preview_tooltip}}'
+    display: Switch
+    contents:
+      type: boolean
+      value: true
   - url: themed-buildings.chapel
     name: themed-buildings-chapel
     text: '{{chapel}}'
