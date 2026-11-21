@@ -1,14 +1,14 @@
-arabian: Arab
-cathedral: Az eredeti székesegyház kultúrája
-chapel: Az eredeti kápolna kultúrája
-church: Az eredeti templom kultúrája
-churches_group: Kápolna, templom és székesegyház
-churches_group_descr: Az európai urak keresztény épületeket, az arab urak mecseteket kapnak. Egyéni MI esetén a
-  kultúrát az aiSwapper adja meg.
-enabled: Vallási épületek az úr kultúrája szerint
-enabled_tooltip: Kikapcsolva az eredeti képek jelennek meg.
+churches_group: Kápolna, templom és katedrális
+churches_group_descr: |-
+  Minden játékos kápolnája, temploma és katedrálisa a lordjához igazodik: az európai lordok keresztény épületeket, az arab lordok mecseteket kapnak. Az MI-lordok oldala a játékból (egyéni MI-knél az aiSwapperből) jön, a tied pedig az általad játszott lordtól.
+enabled: Vallási épületek igazítása a tulajdonos lordjához
+enabled_tooltip: Kikapcsolva minden kápolna, templom és katedrális úgy jelenik meg, ahogy a játék fájljai rajzolják.
+preview: Témához igazított elhelyezési előnézet
+preview_tooltip: A lerakni kívánt épület már előnézetben is a lordodnak megfelelő külsőt mutatja.
+chapel: A játék fájljainak kápolnája
+church: A játék fájljainak temploma
+cathedral: A játék fájljainak katedrálisa
+files_tooltip: Melyik oldalhoz tartozik a játék saját képe ennél az épületnél. A másik oldal játékosai a modul témázott képét kapják.
 european: Európai
-files_tooltip: Válassza ki a játék képének kultúráját. A másik kultúra az alternatív képet kapja.
-preview: Kultúrához igazított előnézet
-preview_tooltip: Az előnézet az úr kultúrájának megfelelő épületet mutatja.
-misc: Miscellaneous
+arabian: Arab
+misc: Egyéb

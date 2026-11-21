@@ -1,13 +1,14 @@
-arabian: 阿拉伯
-cathedral: 原版大教堂的文化
-chapel: 原版礼拜堂的文化
-church: 原版教堂的文化
-churches_group: 礼拜堂、教堂和大教堂
-churches_group_descr: 欧洲领主使用基督教建筑，阿拉伯领主使用清真寺。自定义 AI 的文化由 aiSwapper 提供。
-enabled: 按领主文化显示宗教建筑
-enabled_tooltip: 关闭后使用游戏原图。
-european: 欧洲
-files_tooltip: 选择游戏原图所属的文化。另一种文化使用替代图。
-preview: 显示对应文化的放置预览
-preview_tooltip: 放置时预览符合你的领主文化的建筑。
-misc: Miscellaneous
+churches_group: 礼拜堂、教堂与大教堂
+churches_group_descr: |-
+  每位玩家的礼拜堂、教堂和大教堂都会与所属领主匹配：欧洲领主获得基督教建筑，阿拉伯领主获得清真寺。AI 领主的阵营来自游戏本身（自定义 AI 来自 aiSwapper），玩家则取决于所选领主。
+enabled: 使宗教建筑外观匹配所属领主
+enabled_tooltip: 关闭时，所有礼拜堂、教堂和大教堂均按游戏原文件绘制。
+preview: 放置建筑时显示主题预览
+preview_tooltip: 准备放置建筑时即提前显示所属领主对应的外观。
+chapel: 游戏文件中的礼拜堂属于
+church: 游戏文件中的教堂属于
+cathedral: 游戏文件中的大教堂属于
+files_tooltip: 指定游戏原文件中该建筑贴图属于哪一方；另一方的玩家将使用本模块提供的主题贴图。
+european: 欧洲风格
+arabian: 阿拉伯风格
+misc: 其他

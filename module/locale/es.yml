@@ -1,14 +1,14 @@
-arabian: Árabe
-cathedral: Cultura de la catedral original
-chapel: Cultura de la capilla original
-church: Cultura de la iglesia original
 churches_group: Capilla, iglesia y catedral
-churches_group_descr: Los señores europeos tienen edificios cristianos y los árabes, mezquitas. En las IA personalizadas,
-  la cultura procede de aiSwapper.
-enabled: Adaptar los edificios religiosos al señor
-enabled_tooltip: Desactívalo para usar las imágenes originales.
+churches_group_descr: |-
+  La capilla, iglesia y catedral de cada jugador coinciden con su señor: los señores europeos obtienen edificios cristianos y los señores árabes, mezquitas. El bando de los señores de la IA proviene del juego (y de aiSwapper para IA personalizadas); el tuyo, del señor que juegues.
+enabled: Adaptar edificios religiosos al señor propietario
+enabled_tooltip: Desactivado muestra cada capilla, iglesia y catedral tal como las dibujan los archivos del juego.
+preview: Vista previa de colocación adaptada
+preview_tooltip: El edificio que vas a colocar muestra ya el aspecto que recibe tu señor.
+chapel: La capilla en los archivos del juego es
+church: La iglesia en los archivos del juego es
+cathedral: La catedral en los archivos del juego es
+files_tooltip: A qué bando pertenece la imagen propia del juego para este edificio. Los jugadores del otro bando reciben la imagen temática de este módulo.
 european: Europea
-files_tooltip: Elige la cultura de la imagen del juego. La otra cultura usa la imagen alternativa.
-preview: Vista previa cultural
-preview_tooltip: La vista previa muestra el edificio con el estilo de tu señor.
-misc: Miscellaneous
+arabian: Árabe
+misc: Varios

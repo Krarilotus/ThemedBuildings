@@ -1,14 +1,14 @@
-arabian: Arap
-cathedral: Özgün katedralin kültürü
-chapel: Özgün şapelin kültürü
-church: Özgün kilisenin kültürü
 churches_group: Şapel, kilise ve katedral
-churches_group_descr: Avrupalı lordlar Hristiyan yapıları, Arap lordlar camileri kullanır. Özel yapay zekâların
-  kültürü aiSwapper’dan gelir.
-enabled: Dinî yapıları lorda göre değiştir
-enabled_tooltip: Kapalıyken özgün görseller kullanılır.
+churches_group_descr: |-
+  Her oyuncunun şapeli, kilisesi ve katedrali kendi lorduna uyar: Avrupalı lordlar Hristiyan yapıları, Arap lordlar camiler alır. Yapay zekâ lordlarının tarafı oyundan (özel yapay zekâlar için aiSwapper'dan), seninki ise oynadığın lorddan gelir.
+enabled: Dinî binaları sahibinin lorduna uydur
+enabled_tooltip: Kapalıyken tüm şapel, kilise ve katedraller oyun dosyalarının çizdiği şekilde gösterilir.
+preview: Temalı yerleştirme önizlemesi
+preview_tooltip: Yerleştirmek üzere olduğun bina şimdiden lordunun alacağı görünümü gösterir.
+chapel: Oyun dosyalarındaki şapel
+church: Oyun dosyalarındaki kilise
+cathedral: Oyun dosyalarındaki katedral
+files_tooltip: Oyunun bu bina için kendi görselinin hangi tarafa ait olduğu. Diğer taraftaki oyuncular bu modülün getirdiği temalı görseli alır.
 european: Avrupalı
-files_tooltip: Oyundaki görselin kültürünü seçin. Diğer kültür alternatif görseli kullanır.
-preview: Kültüre uygun yerleştirme önizlemesi
-preview_tooltip: Önizleme, yapıyı lordunuzun kültürüne göre gösterir.
-misc: Miscellaneous
+arabian: Arap
+misc: Diğer

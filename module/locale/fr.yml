@@ -1,14 +1,14 @@
-arabian: Arabe
-cathedral: Culture de la cathédrale d’origine
-chapel: Culture de la chapelle d’origine
-church: Culture de l’église d’origine
 churches_group: Chapelle, église et cathédrale
-churches_group_descr: Les seigneurs européens ont des édifices chrétiens et les seigneurs arabes des mosquées. Pour
-  les IA personnalisées, la culture vient d’aiSwapper.
-enabled: Adapter les édifices religieux au seigneur
-enabled_tooltip: Désactivez pour utiliser les images d’origine.
+churches_group_descr: |-
+  La chapelle, l'église et la cathédrale de chaque joueur correspondent à son seigneur : les seigneurs européens obtiennent des édifices chrétiens, les seigneurs arabes des mosquées. Le camp des seigneurs IA provient du jeu (et d'aiSwapper pour les IA personnalisées) ; le vôtre vient du seigneur que vous jouez.
+enabled: Adapter les édifices religieux au seigneur propriétaire
+enabled_tooltip: Désactivé, chaque chapelle, église et cathédrale s'affiche telle qu'elle apparaît dans les fichiers du jeu.
+preview: Aperçu de placement adapté
+preview_tooltip: Le bâtiment que vous êtes sur le point de placer affiche déjà l'apparence propre à votre seigneur.
+chapel: La chapelle dans les fichiers du jeu est
+church: L'église dans les fichiers du jeu est
+cathedral: La cathédrale dans les fichiers du jeu est
+files_tooltip: Indique à quel camp appartient l'image d'origine du jeu pour ce bâtiment. Les joueurs de l'autre camp reçoivent l'image thématique fournie par ce module.
 european: Européenne
-files_tooltip: Choisissez la culture de l’image du jeu. L’autre utilise l’image de remplacement.
-preview: Aperçu culturel du placement
-preview_tooltip: L’aperçu montre l’édifice dans le style de votre seigneur.
-misc: Miscellaneous
+arabian: Arabe
+misc: Divers
