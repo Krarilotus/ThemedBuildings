@@ -25,6 +25,9 @@ local GROUP_CHAPEL = 250
 local RESOURCE = "ucp/modules/" .. NAME .. "/resources/tile_churches_themed.gm1"
 local CACHE = "ucp/" .. NAME .. "-tile_churches.gm1"
 local CULTURE = { european = 0, arabian = 1 }
+-- The game tick counter: mov ecx, [edi+0x998] / mov edx, [ticks] in updateUnits. The mask load
+-- before it is patched by other modules.
+local AOB_TICKS = "8B 8F 98 09 00 00 8B 15 I(? ? ? ?)"
 
 local themed = {}
 
@@ -38,6 +41,12 @@ local function scan(name, pattern)
     error(NAME .. ": could not find " .. name .. " (" .. pattern .. ")")
   end
   return address
+end
+
+local function tickCounter(feature)
+  local ok, _, ticks = pcall(utils.AOBExtract, AOB_TICKS)
+  if ok and ticks then return ticks end
+  log(WARNING, string.format("%s: game tick counter not found, %s stays off", NAME, feature))
 end
 
 local function u8(address)
@@ -224,13 +233,12 @@ local function jump(from, to, size)
   core.writeCode(from, bytes)
 end
 
-local function installRender(data, config)
+local function installRender(data, config, tick)
   local ground = scan("ground tile read", "0F B7 0C 6D ? ? ? ? 89 0D ? ? ? ? 7C 13 8B 54 24 28")
   local building = scan("building tile read", "0F B7 2C 45 ? ? ? ? 0F B7 3C 45 ? ? ? ? 8D 04 45")
   local bmap = scan("building map", "0F BF 34 75 ? ? ? ? 89 0D ? ? ? ? 89 44 24 48")
   local owner = scan("building type", "0F B7 A9 ? ? ? ? 0F BF CD 8B 0C 8D")
   local lord = scan("lord type", "8B 44 24 04 83 3C 85 ? ? ? ? FF 75 ? 69 C0")
-  local tick = scan("tick counter", "8B 87 50 0A 00 00 8B 8F 98 09 00 00")
 
   local gfx = core.readInteger(ground + 4)
   if core.readInteger(building + 4) ~= gfx then
@@ -252,7 +260,7 @@ local function installRender(data, config)
     BMAP = core.readInteger(bmap + 4),
     OWNER = core.readInteger(owner + 3) + 4,   -- +0xD2 building type, +0xD6 owner
     LORDTYPE = lord,
-    TICK = core.readInteger(tick + 14),
+    TICK = tick,
   }
   local remap = core.allocateAssembly(REMAP, values)
 
@@ -364,6 +372,10 @@ function themed.enable(self, config)
   if modifier == nil then
     error(NAME .. ": needs gmResourceModifier")
   end
+  local tick = tickCounter("theming")
+  if tick == nil then
+    return
+  end
   -- VARS: +0 picture shift (0 = off), +4 first church picture, +8 tick of the lord cache,
   -- +0xC pictures to swap, +0x10..0x12 culture the game files show (cathedral, church, chapel), +0x20 lord per player
   local data = core.allocate(0x40, true)
@@ -372,7 +384,7 @@ function themed.enable(self, config)
     core.writeInteger(data + offset, 0xFFFFFFFF)
   end
   installSheet(data, modifier)
-  installRender(data, config)
+  installRender(data, config, tick)
 end
 
 function themed.disable(self, config)
