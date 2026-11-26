@@ -12,7 +12,7 @@ options:
     display: UCP2Switch
     contents:
       type: boolean
-      value: true
+      value: false
     header: '{{enabled}}'
   - url: themed-buildings.preview
     name: themed-buildings-preview
@@ -20,7 +20,7 @@ options:
     display: UCP2Switch
     contents:
       type: boolean
-      value: true
+      value: false
     header: '{{preview}}'
   - name: themed-buildings-chapel_details
     display: GroupBox

@@ -261,7 +261,7 @@ local function installRender(data, config)
   blob = core.allocateAssembly(HOOK_BUILDING, { GFX = gfx, REMAP = remap, RESUME = building + 8 })
   jump(building, blob, 8)
 
-  if config.preview == false then
+  if config.preview ~= true then
     return
   end
   local previewGround = scan("preview ground read", "0F B7 04 6D ? ? ? ? 33 F6 85 C0 89 74 24 54 A3")
@@ -356,7 +356,7 @@ end
 
 function themed.enable(self, config)
   config = config or {}
-  if config.enabled == false then
+  if config.enabled ~= true then
     log_(INFO, "off")
     return
   end

@@ -16,6 +16,14 @@ The lord's side is the game's own: the AI lords keep theirs (custom AIs from aiS
 you get the side of the lord you play. Nothing is saved in maps or saves. Needs
 gmResourceModifier.
 
+## Vanilla and Recommended
+
+Every switch of the module is off by default, so the module alone installs nothing. Two plugins
+in this repository form the Themed Buildings family in the launcher:
+`themed-buildings-recommended` (offered first) switches on the themed buildings and their
+placement preview, `themed-buildings-vanilla` keeps everything off. Plugins that build on the
+module set the options they need themselves.
+
 ## What is in here
 
 | Path | What |
