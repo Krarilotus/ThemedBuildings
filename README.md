@@ -4,6 +4,18 @@ A UCP3 module for Stronghold Crusader: chapels, churches and cathedrals take the
 owner's lord - European lords build Christian buildings, Arabian lords build mosques. See
 [module/locale/description-en.md](module/locale/description-en.md).
 
+## In the game
+
+Each building has two pictures: the one in the game files and a themed one this module brings.
+In the settings you say which side the game files' picture belongs to (the chapel and cathedral
+European and the church a mosque, as in Reconquista, unless changed). Every player of the other
+side gets the themed picture. A ruined cathedral becomes a ruined grand mosque if the game's
+tile_churches.gm1 has the ruin (vanilla does, Reconquista's does not).
+
+The lord's side is the game's own: the AI lords keep theirs (custom AIs from aiSwapper too), and
+you get the side of the lord you play. Nothing is saved in maps or saves. Needs
+gmResourceModifier.
+
 ## What is in here
 
 | Path | What |
