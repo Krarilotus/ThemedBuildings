@@ -1,7 +1,6 @@
 # Themed Buildings
 
 **Szerző**: Monsterfish
-**Verzió**: 1.0.2
 
 A kápolnák, templomok és katedrálisok a tulajdonos lordjuk stílusát veszik fel. Az európai lordok kápolnát, templomot és katedrálist építenek; az arab lordok kis mecsetet, mecsetet és nagy mecsetet. A romos katedrálisból romos nagy mecset lesz, ha a játék `tile_churches.gm1` fájlja tartalmazza a romot (az eredetiben igen, a Reconquistában nem).
 

@@ -1,7 +1,6 @@
 # Themed Buildings
 
 **Autor**: Monsterfish
-**Versión**: 1.0.2
 
 Las capillas, iglesias y catedrales adoptan el aspecto del señor al que pertenecen. Los señores europeos construyen capilla, iglesia y catedral; los señores árabes construyen mezquita pequeña, mezquita y gran mezquita. Una catedral en ruinas pasa a ser una gran mezquita en ruinas si el archivo `tile_churches.gm1` del juego incluye la ruina (el original la tiene; Reconquista no).
 

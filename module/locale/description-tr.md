@@ -1,7 +1,6 @@
 # Themed Buildings
 
 **Yazar**: Monsterfish
-**Sürüm**: 1.0.2
 
 Şapeller, kiliseler ve katedraller sahiplerinin lorduna uygun bir görünüm alır. Avrupalı lordlar şapel, kilise ve katedral; Arap lordlar küçük cami, cami ve büyük cami inşa eder. Oyunun `tile_churches.gm1` dosyası harabeyi içeriyorsa (orijinalde vardır, Reconquista'da yoktur) yıkık katedral yıkık büyük camiye dönüşür.
 

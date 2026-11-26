@@ -1,7 +1,6 @@
 # Themed Buildings
 
 **Autor**: Monsterfish
-**Version**: 1.0.2
 
 Kapellen, Kirchen und Kathedralen übernehmen das Aussehen des jeweiligen Lords. Europäische Lords bauen eine Kapelle, eine Kirche und eine Kathedrale; arabische Lords bauen eine kleine Moschee, eine Moschee und eine große Moschee. Eine zerstörte Kathedrale wird zu einer zerstörten großen Moschee, sofern die Datei `tile_churches.gm1` des Spiels die Ruine enthält (in Vanilla vorhanden, in Reconquista nicht).
 

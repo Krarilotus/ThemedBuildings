@@ -1,7 +1,6 @@
 # Themed Buildings
 
 **Auteur** : Monsterfish
-**Version** : 1.0.2
 
 Les chapelles, églises et cathédrales adoptent l'apparence du seigneur qui les possède. Les seigneurs européens bâtissent une chapelle, une église et une cathédrale ; les seigneurs arabes bâtissent une petite mosquée, une mosquée et une grande mosquée. Une cathédrale en ruine devient une grande mosquée en ruine si le fichier `tile_churches.gm1` du jeu contient la ruine (présente dans le jeu d'origine, absente dans Reconquista).
 
