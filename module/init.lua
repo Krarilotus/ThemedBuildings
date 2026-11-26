@@ -27,7 +27,7 @@ local CACHE = "ucp/" .. NAME .. "-tile_churches.gm1"
 local CULTURE = { european = 0, arabian = 1 }
 -- The game tick counter: mov ecx, [edi+0x998] / mov edx, [ticks] in updateUnits. The mask load
 -- before it is patched by other modules.
-local AOB_TICKS = "8B 8F 98 09 00 00 8B 15 I(? ? ? ?)"
+local AOB_TICKS = "8B 8F 98 09 00 00 8B 15 ? ? ? ?"
 
 local themed = {}
 
@@ -44,9 +44,9 @@ local function scan(name, pattern)
 end
 
 local function tickCounter(feature)
-  local ok, _, ticks = pcall(utils.AOBExtract, AOB_TICKS)
-  if ok and ticks then return ticks end
-  log(WARNING, string.format("%s: game tick counter not found, %s stays off", NAME, feature))
+  local site, problem = core.AOBScanUnique(AOB_TICKS)
+  if site then return core.readInteger(site + 8) end
+  log(WARNING, string.format("%s: game tick counter %s, %s stays off", NAME, problem, feature))
 end
 
 local function u8(address)
