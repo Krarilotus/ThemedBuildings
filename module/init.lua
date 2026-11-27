@@ -284,14 +284,14 @@ local function installPreview(saved, remap)
     error(NAME .. ": the building preview reads do not look the way they should")
   end
   local player = core.readInteger(previewGround + 0x9A)
-  local blob = core.allocateAssembly(HOOK_PREVIEW_GROUND, {
+  local ground = core.allocateAssembly(HOOK_PREVIEW_GROUND, {
     LAYER = layer, PLAYER = player, REMAP_PLAYER = remap + 5, RESUME = previewGround + 8,
   })
-  jump(saved, previewGround, blob, 8)
-  blob = core.allocateAssembly(HOOK_PREVIEW_BUILDING, {
+  local building = core.allocateAssembly(HOOK_PREVIEW_BUILDING, {
     PLAYER = player, REMAP_PLAYER = remap + 5, RESUME = previewBuilding + 0xB + 5,
   })
-  jump(saved, previewBuilding + 0xB, blob, 5)
+  jump(saved, previewGround, ground, 8)
+  jump(saved, previewBuilding + 0xB, building, 5)
 end
 
 -- The themed sheet --------------------------------------------------------------------------
@@ -397,17 +397,21 @@ local function installTheme(saved, config)
   return remap
 end
 
-local function tryInstall(install, message, input)
+local function tryInstall(install, input, message, partialMessage)
   local saved = {}
   local ok, result = pcall(install, saved, input)
   if ok then return result end
 
+  local rollbackFailed = false
   for i = #saved, 1, -1 do
     local patch = saved[i]
     local restored, problem = pcall(core.writeCode, patch.address, patch.bytes, false)
-    if not restored then log_(WARNING, tostring(problem)) end
+    if not restored then
+      rollbackFailed = true
+      log_(WARNING, string.format("could not restore code at 0x%X: %s", patch.address, tostring(problem)))
+    end
   end
-  log_(ERROR, message)
+  log_(ERROR, rollbackFailed and partialMessage or message)
   log_(WARNING, tostring(result))
 end
 
@@ -416,9 +420,11 @@ function themed.enable(self, config)
     log_(INFO, "off")
     return
   end
-  local remap = tryInstall(installTheme, "Themed churches are off. The game or graphics could not be prepared.", config)
+  local remap = tryInstall(installTheme, config, "Themed churches are off. The game or graphics could not be prepared.",
+    "Themed church setup failed. Some changes may still be active.")
   if remap ~= nil and config.preview == true then
-    tryInstall(installPreview, "The themed building preview is off.", remap)
+    tryInstall(installPreview, remap, "The themed building preview is off.",
+      "Themed building preview setup failed. Some preview changes may still be active.")
   end
 end
 
