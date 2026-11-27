@@ -43,11 +43,10 @@ local function scan(name, pattern)
   return address
 end
 
-local function tickCounter(feature)
+local function tickCounter()
   local site, problem = core.AOBScanUnique(AOB_TICKS)
-  if site then return core.readInteger(site + 8) end
-  log(ERROR, "Themed churches are off. The game tick counter could not be read.")
-  log(WARNING, string.format("%s: game tick counter %s, %s stays off", NAME, problem, feature))
+  if not site then error("game tick counter: " .. tostring(problem)) end
+  return core.readInteger(site + 8)
 end
 
 local function u8(address)
@@ -226,15 +225,20 @@ local HOOK_PREVIEW_BUILDING = [[
   jmp RESUME
 ]]
 
-local function jump(from, to, size)
+local function rememberPatch(saved, address, size)
+  saved[#saved + 1] = { address = address, bytes = core.readBytes(address, size) }
+end
+
+local function jump(saved, from, to, size)
   local bytes = { 0xE9, core.itob(to - from - 5) }
   for _ = 6, size do
     bytes[#bytes + 1] = 0x90
   end
+  rememberPatch(saved, from, size)
   core.writeCode(from, bytes)
 end
 
-local function installRender(data, config, tick)
+local function installRender(saved, data, config, tick)
   local ground = scan("ground tile read", "0F B7 0C 6D ? ? ? ? 89 0D ? ? ? ? 7C 13 8B 54 24 28")
   local building = scan("building tile read", "0F B7 2C 45 ? ? ? ? 0F B7 3C 45 ? ? ? ? 8D 04 45")
   local bmap = scan("building map", "0F BF 34 75 ? ? ? ? 89 0D ? ? ? ? 89 44 24 48")
@@ -266,13 +270,13 @@ local function installRender(data, config, tick)
   local remap = core.allocateAssembly(REMAP, values)
 
   local blob = core.allocateAssembly(HOOK_GROUND, { GFX = gfx, REMAP = remap, RESUME = ground + 8 })
-  jump(ground, blob, 8)
+  jump(saved, ground, blob, 8)
   blob = core.allocateAssembly(HOOK_BUILDING, { GFX = gfx, REMAP = remap, RESUME = building + 8 })
-  jump(building, blob, 8)
+  jump(saved, building, blob, 8)
+  return remap
+end
 
-  if config.preview ~= true then
-    return
-  end
+local function installPreview(saved, remap)
   local previewGround = scan("preview ground read", "0F B7 04 6D ? ? ? ? 33 F6 85 C0 89 74 24 54 A3")
   local previewBuilding = scan("preview building read", "8D 04 45 ? ? ? ? 89 44 24 68 0F B7 00 85 C0")
   local layer = core.readInteger(previewGround + 4)
@@ -280,19 +284,19 @@ local function installRender(data, config, tick)
     error(NAME .. ": the building preview reads do not look the way they should")
   end
   local player = core.readInteger(previewGround + 0x9A)
-  blob = core.allocateAssembly(HOOK_PREVIEW_GROUND, {
+  local blob = core.allocateAssembly(HOOK_PREVIEW_GROUND, {
     LAYER = layer, PLAYER = player, REMAP_PLAYER = remap + 5, RESUME = previewGround + 8,
   })
-  jump(previewGround, blob, 8)
+  jump(saved, previewGround, blob, 8)
   blob = core.allocateAssembly(HOOK_PREVIEW_BUILDING, {
     PLAYER = player, REMAP_PLAYER = remap + 5, RESUME = previewBuilding + 0xB + 5,
   })
-  jump(previewBuilding + 0xB, blob, 5)
+  jump(saved, previewBuilding + 0xB, blob, 5)
 end
 
 -- The themed sheet --------------------------------------------------------------------------
 
-local function installSheet(data, modifier)
+local function installSheet(saved, data, modifier)
   local loader = scan("gm loader", "53 55 8B 6C 24 0C 56 57 8B D9 33 C0")
   if u8(loader + 0x35) ~= 0xA3 or u8(loader + 0x6F) ~= 0x89 then
     error(NAME .. ": unsupported gm loader")
@@ -309,6 +313,8 @@ local function installSheet(data, modifier)
   if kind ~= 3 or count < SHEET_IMAGES then
     error(NAME .. ": " .. RESOURCE .. " is not a building sheet")
   end
+  local hookSize = 6
+  rememberPatch(saved, loader, hookSize)
   local resource = modifier:LoadGm1Resource(path)
   if type(resource) ~= "number" or resource < 0 then
     error(NAME .. ": gmResourceModifier could not load " .. path)
@@ -316,7 +322,7 @@ local function installSheet(data, modifier)
 
   local sheetFailureReported = false
   local original
-  original = core.hookCode(function(renderer, names)
+  local function loadSheet(renderer, names)
     original(renderer, names)
     local ok, message = pcall(function()
       local slot = core.readInteger(renderer + 0x4C)
@@ -363,25 +369,22 @@ local function installSheet(data, modifier)
         log_(WARNING, tostring(message))
       end
     end
-  end, loader, 2, 1, 6)
+  end
+  local hooked, result = pcall(core.hookCode, loadSheet, loader, 2, 1, hookSize)
+  if not hooked or type(result) ~= "function" then
+    local freed, problem = pcall(modifier.FreeGm1Resource, modifier, resource)
+    if not freed then log_(WARNING, tostring(problem)) end
+    error(hooked and "could not hook the graphics loader" or result, 0)
+  end
+  original = result
 end
 
 -- Module ------------------------------------------------------------------------------------
 
-function themed.enable(self, config)
-  config = config or {}
-  if config.enabled ~= true then
-    log_(INFO, "off")
-    return
-  end
+local function installTheme(saved, config)
   local modifier = modules.gmResourceModifier
-  if modifier == nil then
-    error(NAME .. ": needs gmResourceModifier")
-  end
-  local tick = tickCounter("theming")
-  if tick == nil then
-    return
-  end
+  if modifier == nil then error("gmResourceModifier is unavailable") end
+  local tick = tickCounter()
   -- VARS: +0 picture shift (0 = off), +4 first church picture, +8 tick of the lord cache,
   -- +0xC pictures to swap, +0x10..0x12 culture the game files show (cathedral, church, chapel), +0x20 lord per player
   local data = core.allocate(0x40, true)
@@ -389,8 +392,34 @@ function themed.enable(self, config)
   for offset = 0x20, 0x2C, 4 do
     core.writeInteger(data + offset, 0xFFFFFFFF)
   end
-  installSheet(data, modifier)
-  installRender(data, config, tick)
+  local remap = installRender(saved, data, config, tick)
+  installSheet(saved, data, modifier)
+  return remap
+end
+
+local function tryInstall(install, message, input)
+  local saved = {}
+  local ok, result = pcall(install, saved, input)
+  if ok then return result end
+
+  for i = #saved, 1, -1 do
+    local patch = saved[i]
+    local restored, problem = pcall(core.writeCode, patch.address, patch.bytes, false)
+    if not restored then log_(WARNING, tostring(problem)) end
+  end
+  log_(ERROR, message)
+  log_(WARNING, tostring(result))
+end
+
+function themed.enable(self, config)
+  if type(config) ~= "table" or config.enabled ~= true then
+    log_(INFO, "off")
+    return
+  end
+  local remap = tryInstall(installTheme, "Themed churches are off. The game or graphics could not be prepared.", config)
+  if remap ~= nil and config.preview == true then
+    tryInstall(installPreview, "The themed building preview is off.", remap)
+  end
 end
 
 function themed.disable(self, config)
