@@ -1,8 +1,7 @@
-churches_group: Şapel, kilise ve katedral
-churches_group_descr: |-
-  Her oyuncunun şapeli, kilisesi ve katedrali kendi lorduna uyar: Avrupalı lordlar Hristiyan yapıları, Arap lordlar camiler alır. Yapay zekâ lordlarının tarafı oyundan (özel yapay zekâlar için aiSwapper'dan), seninki ise oynadığın lorddan gelir.
-enabled: Dinî binaları sahibinin lorduna uydur
-enabled_tooltip: Kapalıyken tüm şapel, kilise ve katedraller oyun dosyalarının çizdiği şekilde gösterilir.
-preview: Temalı yerleştirme önizlemesi
-preview_tooltip: Yerleştirmek üzere olduğun bina şimdiden lordunun alacağı görünümü gösterir.
+churches_group: Temalı Binalar
+churches_group_descr: Şapel, kilise ve katedrallere lordlarının görünümünü kazandırır.
+enabled: Dinî binaları lorda göre uyarla
+enabled_tooltip: Avrupalı lordlar kilise, Arap lordlar cami inşa eder.
+preview: Yerleştirmeden önce temalı binayı önizle
+preview_tooltip: İmlecin altında lordunuzun sürümünü görmek için bir dinî bina seçin.
 qol: Kullanım kolaylığı

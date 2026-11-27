@@ -1,8 +1,7 @@
-churches_group: 礼拜堂、教堂与大教堂
-churches_group_descr: |-
-  每位玩家的礼拜堂、教堂和大教堂都会与所属领主匹配：欧洲领主获得基督教建筑，阿拉伯领主获得清真寺。AI 领主的阵营来自游戏本身（自定义 AI 来自 aiSwapper），玩家则取决于所选领主。
-enabled: 使宗教建筑外观匹配所属领主
-enabled_tooltip: 关闭时，所有礼拜堂、教堂和大教堂均按游戏原文件绘制。
-preview: 放置建筑时显示主题预览
-preview_tooltip: 准备放置建筑时即提前显示所属领主对应的外观。
+churches_group: 主题建筑
+churches_group_descr: 让小教堂、教堂和大教堂呈现所属领主对应的建筑风格。
+enabled: 使宗教建筑与领主风格匹配
+enabled_tooltip: 欧洲领主建造教堂，阿拉伯领主建造清真寺。
+preview: 放置前预览主题建筑
+preview_tooltip: 选择宗教建筑时，在光标下显示当前领主对应的外观。
 qol: 便利性改进

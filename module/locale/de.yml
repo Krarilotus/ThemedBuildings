@@ -1,8 +1,7 @@
-churches_group: Kapelle, Kirche und Kathedrale
-churches_group_descr: |-
-  Kapelle, Kirche und Kathedrale jedes Spielers passen zu seinem Lord: Europäische Lords erhalten christliche Gebäude, arabische Lords Moscheen. Die Seite der KI-Lords stammt aus dem Spiel (und bei benutzerdefinierten KIs aus aiSwapper); deine richtet sich nach dem von dir gespielten Lord.
-enabled: Religiöse Gebäude an den jeweiligen Lord anpassen
-enabled_tooltip: Ist dies deaktiviert, werden alle Kapellen, Kirchen und Kathedralen genau so dargestellt wie in den Spieldateien.
-preview: Angepasste Bauvorschau
-preview_tooltip: Das Gebäude, das du gerade platzierst, zeigt bereits das Aussehen deines Lords.
+churches_group: Thematische Gebäude
+churches_group_descr: Verleiht Kapellen, Kirchen und Kathedralen das Aussehen ihres Lords.
+enabled: Religiöse Gebäude an den Lord anpassen
+enabled_tooltip: Europäische Lords bauen Kirchen, arabische Lords bauen Moscheen.
+preview: Thematisches Gebäude vor dem Platzieren anzeigen
+preview_tooltip: Wähle ein religiöses Gebäude aus, um die Version deines Lords unter dem Cursor zu sehen.
 qol: Komfort

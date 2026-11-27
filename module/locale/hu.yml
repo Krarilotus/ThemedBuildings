@@ -1,8 +1,7 @@
-churches_group: Kápolna, templom és katedrális
-churches_group_descr: |-
-  Minden játékos kápolnája, temploma és katedrálisa a lordjához igazodik: az európai lordok keresztény épületeket, az arab lordok mecseteket kapnak. Az MI-lordok oldala a játékból (egyéni MI-knél az aiSwapperből) jön, a tied pedig az általad játszott lordtól.
-enabled: Vallási épületek igazítása a tulajdonos lordjához
-enabled_tooltip: Kikapcsolva minden kápolna, templom és katedrális úgy jelenik meg, ahogy a játék fájljai rajzolják.
-preview: Témához igazított elhelyezési előnézet
-preview_tooltip: A lerakni kívánt épület már előnézetben is a lordodnak megfelelő külsőt mutatja.
+churches_group: Tematikus épületek
+churches_group_descr: A kápolnák, templomok és katedrálisok a saját lordjuk stílusát kapják meg.
+enabled: Vallási épületek igazítása a lordhoz
+enabled_tooltip: Az európai lordok templomokat, az arab lordok mecseteket építenek.
+preview: Tematikus épület előnézete elhelyezés előtt
+preview_tooltip: Válassz egy vallási épületet, hogy a kurzor alatt a lordod változatát lásd.
 qol: Kényelmi funkciók

@@ -1,5 +1,3 @@
 # Themed Buildings
 
-**Auteur** : Monsterfish
-
-Les chapelles, églises et cathédrales adoptent l'apparence du seigneur qui les possède. Les seigneurs européens bâtissent une chapelle, une église et une cathédrale ; les seigneurs arabes bâtissent une petite mosquée, une mosquée et une grande mosquée.
+Les chapelles, églises et cathédrales s’adaptent à leur seigneur. Les seigneurs européens construisent des églises et les seigneurs arabes des mosquées.

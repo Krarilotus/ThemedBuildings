@@ -1,8 +1,7 @@
-churches_group: Chapelle, église et cathédrale
-churches_group_descr: |-
-  La chapelle, l'église et la cathédrale de chaque joueur correspondent à son seigneur : les seigneurs européens obtiennent des édifices chrétiens, les seigneurs arabes des mosquées. Le camp des seigneurs IA provient du jeu (et d'aiSwapper pour les IA personnalisées) ; le vôtre vient du seigneur que vous jouez.
-enabled: Adapter les édifices religieux au seigneur propriétaire
-enabled_tooltip: Désactivé, chaque chapelle, église et cathédrale s'affiche telle qu'elle apparaît dans les fichiers du jeu.
-preview: Aperçu de placement adapté
-preview_tooltip: Le bâtiment que vous êtes sur le point de placer affiche déjà l'apparence propre à votre seigneur.
+churches_group: Bâtiments thématiques
+churches_group_descr: Donne aux chapelles, églises et cathédrales l’apparence de leur seigneur.
+enabled: Adapter les édifices religieux au seigneur
+enabled_tooltip: Les seigneurs européens construisent des églises et les seigneurs arabes des mosquées.
+preview: Aperçu du bâtiment thématique avant placement
+preview_tooltip: Sélectionnez un édifice religieux pour voir la version de votre seigneur sous le curseur.
 qol: Qualité de vie
