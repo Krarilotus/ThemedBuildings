@@ -46,6 +46,7 @@ end
 local function tickCounter(feature)
   local site, problem = core.AOBScanUnique(AOB_TICKS)
   if site then return core.readInteger(site + 8) end
+  log(ERROR, "Themed churches are off. The game tick counter could not be read.")
   log(WARNING, string.format("%s: game tick counter %s, %s stays off", NAME, problem, feature))
 end
 
@@ -313,6 +314,7 @@ local function installSheet(data, modifier)
     error(NAME .. ": gmResourceModifier could not load " .. path)
   end
 
+  local sheetFailureReported = false
   local original
   original = core.hookCode(function(renderer, names)
     original(renderer, names)
@@ -355,7 +357,11 @@ local function installSheet(data, modifier)
     end)
     if not ok then
       core.writeInteger(data, 0)
-      log_(WARNING, "themed churches are off: " .. tostring(message))
+      if not sheetFailureReported then
+        sheetFailureReported = true
+        log_(ERROR, "Themed churches are off. The graphics sheet could not be installed.")
+        log_(WARNING, tostring(message))
+      end
     end
   end, loader, 2, 1, 6)
 end
