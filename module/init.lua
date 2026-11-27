@@ -36,10 +36,8 @@ local function log_(level, text)
 end
 
 local function scan(name, pattern)
-  local address = core.scanForAOB(pattern)
-  if address == nil then
-    error(NAME .. ": could not find " .. name .. " (" .. pattern .. ")")
-  end
+  local address, problem = core.AOBScanUnique(pattern)
+  if address == nil then error(name .. " " .. problem, 0) end
   return address
 end
 
@@ -81,8 +79,18 @@ local function sheetPath()
   return CACHE, string.unpack("<I4", data, 13), string.unpack("<I4", data, 21)
 end
 
-local function culture(value, default)
-  return CULTURE[value] or default
+local function culture(value, default, building)
+  if value == nil then return default end
+  if type(value) ~= "string" then
+    log_(ERROR, "Invalid " .. building .. " culture setting type.")
+    return default
+  end
+  local index = CULTURE[value]
+  if index == nil then
+    log_(WARNING, "Unknown " .. building .. " culture. Using the default.")
+    return default
+  end
+  return index
 end
 
 -- Render hooks ------------------------------------------------------------------------------
@@ -238,7 +246,7 @@ local function jump(saved, from, to, size)
   core.writeCode(from, bytes)
 end
 
-local function installRender(saved, data, config, tick)
+local function prepareRender(data, config, tick)
   local ground = scan("ground tile read", "0F B7 0C 6D ? ? ? ? 89 0D ? ? ? ? 7C 13 8B 54 24 28")
   local building = scan("building tile read", "0F B7 2C 45 ? ? ? ? 0F B7 3C 45 ? ? ? ? 8D 04 45")
   local bmap = scan("building map", "0F BF 34 75 ? ? ? ? 89 0D ? ? ? ? 89 44 24 48")
@@ -253,9 +261,9 @@ local function installRender(saved, data, config, tick)
     error(NAME .. ": unexpected building size")
   end
 
-  core.writeByte(data + 0x10, culture(config.cathedral, 0))
-  core.writeByte(data + 0x11, culture(config.church, 1))
-  core.writeByte(data + 0x12, culture(config.chapel, 0))
+  core.writeByte(data + 0x10, culture(config.cathedral, 0, "cathedral"))
+  core.writeByte(data + 0x11, culture(config.church, 1, "church"))
+  core.writeByte(data + 0x12, culture(config.chapel, 0, "chapel"))
 
   local values = {
     VARS = data,
@@ -269,11 +277,13 @@ local function installRender(saved, data, config, tick)
   }
   local remap = core.allocateAssembly(REMAP, values)
 
-  local blob = core.allocateAssembly(HOOK_GROUND, { GFX = gfx, REMAP = remap, RESUME = ground + 8 })
-  jump(saved, ground, blob, 8)
-  blob = core.allocateAssembly(HOOK_BUILDING, { GFX = gfx, REMAP = remap, RESUME = building + 8 })
-  jump(saved, building, blob, 8)
-  return remap
+  local groundHook = core.allocateAssembly(HOOK_GROUND, { GFX = gfx, REMAP = remap, RESUME = ground + 8 })
+  local buildingHook = core.allocateAssembly(HOOK_BUILDING,
+    { GFX = gfx, REMAP = remap, RESUME = building + 8 })
+  return remap, function(saved)
+    jump(saved, ground, groundHook, 8)
+    jump(saved, building, buildingHook, 8)
+  end
 end
 
 local function installPreview(saved, remap)
@@ -296,7 +306,7 @@ end
 
 -- The themed sheet --------------------------------------------------------------------------
 
-local function installSheet(saved, data, modifier)
+local function prepareSheet(data, modifier)
   local loader = scan("gm loader", "53 55 8B 6C 24 0C 56 57 8B D9 33 C0")
   if u8(loader + 0x35) ~= 0xA3 or u8(loader + 0x6F) ~= 0x89 then
     error(NAME .. ": unsupported gm loader")
@@ -313,13 +323,7 @@ local function installSheet(saved, data, modifier)
   if kind ~= 3 or count < SHEET_IMAGES then
     error(NAME .. ": " .. RESOURCE .. " is not a building sheet")
   end
-  local hookSize = 6
-  rememberPatch(saved, loader, hookSize)
-  local resource = modifier:LoadGm1Resource(path)
-  if type(resource) ~= "number" or resource < 0 then
-    error(NAME .. ": gmResourceModifier could not load " .. path)
-  end
-
+  local resource
   local sheetFailureReported = false
   local original
   local function loadSheet(renderer, names)
@@ -370,13 +374,22 @@ local function installSheet(saved, data, modifier)
       end
     end
   end
-  local hooked, result = pcall(core.hookCode, loadSheet, loader, 2, 1, hookSize)
-  if not hooked or type(result) ~= "function" then
-    local freed, problem = pcall(modifier.FreeGm1Resource, modifier, resource)
-    if not freed then log_(WARNING, tostring(problem)) end
-    error(hooked and "could not hook the graphics loader" or result, 0)
+  return function(saved)
+    local hookSize = 6
+    rememberPatch(saved, loader, hookSize)
+    resource = modifier:LoadGm1Resource(path)
+    if type(resource) ~= "number" or resource < 0 then
+      error(NAME .. ": gmResourceModifier could not load " .. path)
+    end
+
+    local hooked, result = pcall(core.hookCode, loadSheet, loader, 2, 1, hookSize)
+    if not hooked or type(result) ~= "function" then
+      local freed, problem = pcall(modifier.FreeGm1Resource, modifier, resource)
+      if not freed then log_(WARNING, tostring(problem)) end
+      error(hooked and "could not hook the graphics loader" or result, 0)
+    end
+    original = result
   end
-  original = result
 end
 
 -- Module ------------------------------------------------------------------------------------
@@ -392,8 +405,10 @@ local function installTheme(saved, config)
   for offset = 0x20, 0x2C, 4 do
     core.writeInteger(data + offset, 0xFFFFFFFF)
   end
-  local remap = installRender(saved, data, config, tick)
-  installSheet(saved, data, modifier)
+  local remap, installRender = prepareRender(data, config, tick)
+  local installSheet = prepareSheet(data, modifier)
+  installRender(saved)
+  installSheet(saved)
   return remap
 end
 
