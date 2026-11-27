@@ -5,10 +5,4 @@ enabled: Adaptar edificios religiosos al señor propietario
 enabled_tooltip: Desactivado muestra cada capilla, iglesia y catedral tal como las dibujan los archivos del juego.
 preview: Vista previa de colocación adaptada
 preview_tooltip: El edificio que vas a colocar muestra ya el aspecto que recibe tu señor.
-chapel: La capilla en los archivos del juego es
-church: La iglesia en los archivos del juego es
-cathedral: La catedral en los archivos del juego es
-files_tooltip: A qué bando pertenece la imagen propia del juego para este edificio. Los jugadores del otro bando reciben la imagen temática de este módulo.
-european: Europea
-arabian: Árabe
-misc: Varios
+qol: Comodidad de juego

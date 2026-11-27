@@ -5,10 +5,4 @@ enabled: Vallási épületek igazítása a tulajdonos lordjához
 enabled_tooltip: Kikapcsolva minden kápolna, templom és katedrális úgy jelenik meg, ahogy a játék fájljai rajzolják.
 preview: Témához igazított elhelyezési előnézet
 preview_tooltip: A lerakni kívánt épület már előnézetben is a lordodnak megfelelő külsőt mutatja.
-chapel: A játék fájljainak kápolnája
-church: A játék fájljainak temploma
-cathedral: A játék fájljainak katedrálisa
-files_tooltip: Melyik oldalhoz tartozik a játék saját képe ennél az épületnél. A másik oldal játékosai a modul témázott képét kapják.
-european: Európai
-arabian: Arab
-misc: Egyéb
+qol: Kényelmi funkciók

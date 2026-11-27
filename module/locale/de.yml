@@ -5,10 +5,4 @@ enabled: Religiöse Gebäude an den jeweiligen Lord anpassen
 enabled_tooltip: Ist dies deaktiviert, werden alle Kapellen, Kirchen und Kathedralen genau so dargestellt wie in den Spieldateien.
 preview: Angepasste Bauvorschau
 preview_tooltip: Das Gebäude, das du gerade platzierst, zeigt bereits das Aussehen deines Lords.
-chapel: Die Kapelle in den Spieldateien ist
-church: Die Kirche in den Spieldateien ist
-cathedral: Die Kathedrale in den Spieldateien ist
-files_tooltip: Zu welcher Seite die eigene Spielgrafik dieses Gebäudes gehört. Spieler der anderen Seite erhalten die thematische Grafik dieses Moduls.
-european: Europäisch
-arabian: Arabisch
-misc: Sonstiges
+qol: Komfort

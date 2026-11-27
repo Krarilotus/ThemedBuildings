@@ -5,10 +5,4 @@ enabled: Dinî binaları sahibinin lorduna uydur
 enabled_tooltip: Kapalıyken tüm şapel, kilise ve katedraller oyun dosyalarının çizdiği şekilde gösterilir.
 preview: Temalı yerleştirme önizlemesi
 preview_tooltip: Yerleştirmek üzere olduğun bina şimdiden lordunun alacağı görünümü gösterir.
-chapel: Oyun dosyalarındaki şapel
-church: Oyun dosyalarındaki kilise
-cathedral: Oyun dosyalarındaki katedral
-files_tooltip: Oyunun bu bina için kendi görselinin hangi tarafa ait olduğu. Diğer taraftaki oyuncular bu modülün getirdiği temalı görseli alır.
-european: Avrupalı
-arabian: Arap
-misc: Diğer
+qol: Kullanım kolaylığı

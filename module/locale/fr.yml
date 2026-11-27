@@ -5,10 +5,4 @@ enabled: Adapter les édifices religieux au seigneur propriétaire
 enabled_tooltip: Désactivé, chaque chapelle, église et cathédrale s'affiche telle qu'elle apparaît dans les fichiers du jeu.
 preview: Aperçu de placement adapté
 preview_tooltip: Le bâtiment que vous êtes sur le point de placer affiche déjà l'apparence propre à votre seigneur.
-chapel: La chapelle dans les fichiers du jeu est
-church: L'église dans les fichiers du jeu est
-cathedral: La cathédrale dans les fichiers du jeu est
-files_tooltip: Indique à quel camp appartient l'image d'origine du jeu pour ce bâtiment. Les joueurs de l'autre camp reçoivent l'image thématique fournie par ce module.
-european: Européenne
-arabian: Arabe
-misc: Divers
+qol: Qualité de vie

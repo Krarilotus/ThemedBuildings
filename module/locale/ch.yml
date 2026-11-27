@@ -5,10 +5,4 @@ enabled: 使宗教建筑外观匹配所属领主
 enabled_tooltip: 关闭时，所有礼拜堂、教堂和大教堂均按游戏原文件绘制。
 preview: 放置建筑时显示主题预览
 preview_tooltip: 准备放置建筑时即提前显示所属领主对应的外观。
-chapel: 游戏文件中的礼拜堂属于
-church: 游戏文件中的教堂属于
-cathedral: 游戏文件中的大教堂属于
-files_tooltip: 指定游戏原文件中该建筑贴图属于哪一方；另一方的玩家将使用本模块提供的主题贴图。
-european: 欧洲风格
-arabian: 阿拉伯风格
-misc: 其他
+qol: 便利性改进

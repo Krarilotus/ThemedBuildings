@@ -7,9 +7,10 @@ owner's lord - European lords build Christian buildings, Arabian lords build mos
 ## In the game
 
 Each building has two pictures: the one in the game files and a themed one this module brings.
-In the settings you say which side the game files' picture belongs to (the chapel and cathedral
-European and the church a mosque, as in Reconquista, unless changed). Every player of the other
-side gets the themed picture. A ruined cathedral becomes a ruined grand mosque if the game's
+Theme packs can set `themed-buildings.chapel`, `themed-buildings.church` and
+`themed-buildings.cathedral` to `european` or `arabian` to match their installed artwork.
+The defaults are European for the chapel and cathedral and Arabian for the church.
+Every player of the other side gets the themed picture. A ruined cathedral becomes a ruined grand mosque if the game's
 tile_churches.gm1 has the ruin (vanilla does, Reconquista's does not).
 
 The lord's side is the game's own: the AI lords keep theirs (custom AIs from aiSwapper too), and
