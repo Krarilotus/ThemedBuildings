@@ -36,14 +36,14 @@ local function log_(level, text)
 end
 
 local function scan(name, pattern)
-  local address, problem = core.AOBScanUnique(pattern)
-  if address == nil then error(name .. " " .. problem, 0) end
+  local found, address = pcall(core.AOBScan, pattern)
+  if not found then error(name .. " not found", 0) end
   return address
 end
 
 local function tickCounter()
-  local site, problem = core.AOBScanUnique(AOB_TICKS)
-  if not site then error("game tick counter: " .. tostring(problem)) end
+  local found, site = pcall(core.AOBScan, AOB_TICKS)
+  if not found then error("game tick counter: not found") end
   return core.readInteger(site + 8)
 end
 
