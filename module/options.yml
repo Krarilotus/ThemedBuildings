@@ -2,6 +2,7 @@ options:
 - display: GroupBox
   category:
   - '{{qol}}'
+  - '{{cat_display_camera}}'
   header: '{{churches_group}}'
   text: '{{churches_group_descr}}'
   hasHeader: true
